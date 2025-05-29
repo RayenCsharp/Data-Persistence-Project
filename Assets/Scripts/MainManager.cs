@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -12,9 +13,12 @@ public class MainManager : MonoBehaviour
 
     public Text ScoreText;
     public GameObject GameOverText;
+    public Text hightestScoreText;
     
     private bool m_Started = false;
     private int m_Points;
+    public static int highestScore = 0;
+    private string bestPlayer;
     
     private bool m_GameOver = false;
 
@@ -22,6 +26,14 @@ public class MainManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (DataHolder.Instance != null)
+        {
+            highestScore = DataHolder.Instance.bestScore;
+            bestPlayer = DataHolder.Instance.bestPlayer;
+        }
+
+        hightestScoreText.text = "Best Score : " + bestPlayer + ": " + highestScore.ToString();
+
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -60,6 +72,11 @@ public class MainManager : MonoBehaviour
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            SceneManager.LoadScene(0); // Load the main menu scene
+        }
     }
 
     void AddPoint(int point)
@@ -68,9 +85,24 @@ public class MainManager : MonoBehaviour
         ScoreText.text = $"Score : {m_Points}";
     }
 
+    void Results (int playerScore)
+    {
+        if (highestScore < playerScore)
+        {
+            highestScore = playerScore;
+            DataHolder.Instance.bestScore = highestScore;
+            bestPlayer = DataHolder.Instance.currentPlayerName;
+            DataHolder.Instance.bestPlayer = bestPlayer;
+
+            hightestScoreText.text = "Best Score : " + bestPlayer + ": " +highestScore.ToString();
+        }
+    }
+
     public void GameOver()
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+        Results(m_Points);
+        DataHolder.Instance.Save(); // Save the data when the game is over
     }
 }
