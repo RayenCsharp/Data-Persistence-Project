@@ -20,7 +20,7 @@ public class DataHolder : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        Load();
+        Load(); // Load data when the game starts
     }
 
     [System.Serializable]
@@ -48,8 +48,8 @@ public class DataHolder : MonoBehaviour
         string path = Application.persistentDataPath + "/savefile.json";
         if (File.Exists(path))
         {
-            string json = System.IO.File.ReadAllText(path);
-            SaveData data = JsonUtility.FromJson<SaveData>(json);
+            string json = System.IO.File.ReadAllText(path); // Read the JSON data from the file
+            SaveData data = JsonUtility.FromJson<SaveData>(json); // Deserialize the JSON data into a SaveData object
             bestScore = data.bestScore;
             currentPlayerName = data.currentPlayerName;
             bestPlayer = data.bestPlayer;
